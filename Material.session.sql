@@ -1,0 +1,3 @@
+ALTER TABLE materials
+ADD COLUMN link TEXT;
+
