@@ -26,6 +26,14 @@ app.get("/materials", (req,res)=>{
     })
 })
 
+app.get("/points", (req,res)=>{
+    const q = "SELECT Punkte FROM lehrer WHERE Benutzername = 'TimFus4559'"
+    db.query(q,(err,data)=>{
+        if(err) return res.json(err)
+        return res.json(data)
+    })
+})
+
 app.post("/materials", (req,res)=>{
     const q = "INSERT INTO materials (`image`, `title`, `description`, `ISBN`, `Kommentar`, `Anzahl`, `Ausgeliehen`, `Kategorie`, `Fach`, `Klassenstufe`, `Regal`, `AktuellePosition`, `link`) VALUES (?)"
     const values = [
@@ -49,6 +57,56 @@ app.post("/materials", (req,res)=>{
         return res.json("Material has been created")
     })
 })
+
+app.put('/materials/:id', (req, res) => {
+    const materialId = req.params.id;
+    const updatedMaterial = req.body;
+
+    const q = `
+        UPDATE materials
+        SET
+            image = ?,
+            title = ?,
+            description = ?,
+            ISBN = ?,
+            Kommentar = ?,
+            Anzahl = ?,
+            Ausgeliehen = ?,
+            Kategorie = ?,
+            Fach = ?,
+            Klassenstufe = ?,
+            Regal = ?,
+            AktuellePosition = ?,
+            link = ?
+        WHERE id = ?
+    `;
+
+    const values = [
+        updatedMaterial.image,
+        updatedMaterial.title,
+        updatedMaterial.description,
+        updatedMaterial.ISBN,
+        updatedMaterial.Kommentar,
+        updatedMaterial.Anzahl,
+        updatedMaterial.Ausgeliehen,
+        updatedMaterial.Kategorie,
+        updatedMaterial.Fach,
+        updatedMaterial.Klassenstufe,
+        updatedMaterial.Regal,
+        updatedMaterial.AktuellePosition,
+        updatedMaterial.link,
+        materialId
+    ];
+
+        db.query(q, values, (err, data) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Internal Server Error" });
+            }
+
+            return res.status(200).json({ message: "Material has been updated" });
+        });
+    });
 
 app.delete("/materials/:id", (req, res) => {
     const materialId = req.params.id;
